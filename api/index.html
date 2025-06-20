@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抖音无水印视频下载</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        #videoForm {
+            display: flex;
+            gap: 0.5rem;
+        }
+        #videoUrl {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background-color: #1877f2;
+            color: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #166fe5;
+        }
+        #result {
+            margin-top: 1.5rem;
+            text-align: left;
+            word-break: break-all;
+        }
+        #result p {
+            background: #f7f7f7;
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+        #result a {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #1877f2;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>抖音无水印视频下载</h1>
+        <form id="videoForm">
+            <input type="text" id="videoUrl" placeholder="请输入抖音视频分享链接" required>
+            <button type="submit">获取视频</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('videoForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const url = document.getElementById('videoUrl').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>正在解析，请稍候...</p>';
+
+            try {
+                // 调用我们自己的后端 API
+                const response = await fetch(`/?data&url=${encodeURIComponent(url)}`);
+                if (!response.ok) {
+                    throw new Error('网络请求失败或服务器出错');
+                }
+                const data = await response.json();
+
+                if (data.video_url) {
+                    resultDiv.innerHTML = `
+                        <p><strong>标题:</strong> ${data.desc || '未知'}</p>
+                        <p><strong>作者:</strong> ${data.nickname || '未知'}</p>
+                        <a href="${data.video_url}" target="_blank" download>✅ 点击这里下载无水印视频</a>
+                    `;
+                } else {
+                    resultDiv.innerHTML = '<p>❌ 解析失败，请检查链接是否为有效的抖音视频分享链接。</p>';
+                }
+            } catch (error) {
+                console.error('获取视频时出错:', error);
+                resultDiv.innerHTML = '<p>❌ 获取失败，请检查链接或稍后再试。</p>';
+            }
+        });
+    </script>
+</body>
+</html>
